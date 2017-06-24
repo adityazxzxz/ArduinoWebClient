@@ -20,26 +20,20 @@ void setup() {
     Ethernet.begin(mac, ip);
   }
   delay(1000);
-  sendData();
+  sendDataToServer();
 }
 
 void loop() {
-  // if there are incoming bytes available
-  // from the server, read them and print them:
-  if (sclient.available()) {
-    char c = sclient.read();
-    Serial.print(c);
-  }
+  //jalankan fungsi get data setelah send data
+  printDataFromServer();
 
   
 }
 
-void getResponse(){
-  
-  }
+
 
 //send data to server
-void sendData(){
+void sendDataToServer(){
     Serial.println("connecting...");
     if (sclient.connect(server, 80)) {
       Serial.println("connected");
@@ -62,4 +56,12 @@ void sendData(){
       while (true);
     }
   }
+
+//get data after send data
+void printDataFromServer(){
+    if (sclient.available()) {
+      char c = sclient.read();
+      Serial.print(c);
+    }
+  }  
 
