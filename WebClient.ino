@@ -9,8 +9,11 @@ IPAddress ip(192, 168, 0, 177);
 
 EthernetClient sclient;
 EthernetServer sserver(80);
+String readString;
+int pin = 13;
 
 void setup() {
+  pinMode(pin, OUTPUT);//PIN 13
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
@@ -29,7 +32,8 @@ void setup() {
 void loop() {
   //jalankan fungsi get data setelah send data
   printDataFromServer();
-  responseToClient();
+  cekStringPIN();
+  responseToClient();//tampilan web
 
   
 }
@@ -65,6 +69,8 @@ void sendDataToServer(){
 void printDataFromServer(){
     if (sclient.available()) {
       char c = sclient.read();
+      readString += c;
+      
       Serial.print(c);
     }
   }  
@@ -89,19 +95,11 @@ void responseToClient(){
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println("Connection: close");  // the connection will be closed after completion of the response
-          client.println("Refresh: 5");  // refresh the page automatically every 5 sec
+          //client.println("Refresh: 5");  // refresh the page automatically every 5 sec
           client.println();
           client.println("<!DOCTYPE HTML>");
           client.println("<html>");
-          // output the value of each analog input pin
-          for (int analogChannel = 0; analogChannel < 6; analogChannel++) {
-            int sensorReading = analogRead(analogChannel);
-            client.print("analog input ");
-            client.print(analogChannel);
-            client.print(" is ");
-            client.print(sensorReading);
-            client.println("<br />");
-          }
+          client.println("Hello");
           client.println("</html>");
           break;
         }
@@ -121,4 +119,18 @@ void responseToClient(){
     Serial.println("client disconnected");
   }
   }
+
+  void cekStringPIN(){
+      if(readString.indexOf("?LED=on") >0)//checks for on
+          {
+            digitalWrite(pin, HIGH);    // set pin 5 high
+            Serial.print("nyala");
+          }
+       if(readString.indexOf("?LED=off") >0)//checks for on
+          {
+           // digitalWrite(pin, LOW);    // set pin 5 high
+           Serial.print("mati");
+          }   
+      readString="";
+    }
 
